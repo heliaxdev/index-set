@@ -85,6 +85,8 @@ impl IndexSet {
 
 #[cfg(test)]
 mod tests {
+    use std::collections::HashSet;
+
     use super::*;
 
     /// Test [`IndexSet`] index insert ops.
@@ -110,5 +112,28 @@ mod tests {
         // than the max no. of bitsets we would otherwise need
         let storage_elements_max = indices[indices.len() - 1] / INDEX_SET_STORAGE_WIDTH;
         assert!(set.bit_sets.len() <= storage_elements_max);
+    }
+
+    /// Test [`IndexSet`] index remove ops.
+    #[test]
+    fn test_index_set_remove() {
+        let mut set = IndexSet::default();
+        let indices = [1, 4, 6, 3, 1, 100, 123, 12, 3];
+        let remove = [100, 6, 100, 12, 123, 3];
+
+        // insert some elements into the set
+        for i in indices.iter().copied() {
+            set.insert(i);
+        }
+
+        // remove elements from the set
+        for i in remove {
+            set.remove(i);
+        }
+
+        let expected: HashSet<_> = indices.into_iter().collect();
+        let got: HashSet<_> = set.iter().collect();
+
+        assert_eq!(expected, got);
     }
 }
