@@ -24,7 +24,7 @@ pub struct IndexSet {
 impl IndexSet {
     /// Add a new index to this [`IndexSet`].
     pub fn insert(&mut self, index: usize) {
-        // theset let exprs will get optimized into a single op,
+        // these let exprs will get optimized into a single op,
         // since they're ordered in sequence, which is nice
         let map_index = index / INDEX_SET_STORAGE_WIDTH;
         let bit_set_index = index % INDEX_SET_STORAGE_WIDTH;
