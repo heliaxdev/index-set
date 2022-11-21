@@ -54,6 +54,15 @@ impl IndexSet {
         }
     }
 
+    /// Check the presence of an index in this [`IndexSet`].
+    pub fn contains(&self, index: usize) -> bool {
+        let (map_index, bit_set_index) = calculate_map_and_set_indices(index);
+        self.bit_sets
+            .get(&map_index)
+            .map(|&set| set & (1 << bit_set_index) != 0)
+            .unwrap_or(false)
+    }
+
     /// Return an iterator over the indices in
     /// this [`IndexSet`], in ascending order.
     #[inline]
