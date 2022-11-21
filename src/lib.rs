@@ -1,6 +1,6 @@
 //! Set data structure optimized to store [`usize`] values.
 
-pub mod storage;
+mod storage;
 
 use std::collections::btree_map::Entry;
 use std::collections::BTreeMap;
