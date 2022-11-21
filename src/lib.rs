@@ -51,7 +51,7 @@ impl IndexSet {
 
     /// Merge two [`IndexSet`] instances.
     ///
-    /// Corresponds to a mutating union set operation,
+    /// Corresponds to a mutating set union operation,
     /// between `self` and `other`.
     #[inline]
     pub fn merge(&mut self, other: &IndexSet) {
