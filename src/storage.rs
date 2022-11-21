@@ -33,7 +33,7 @@ pub trait Storage:
     + BitOrAssign
     + Not<Output = Self>
 {
-    /// The value 0 of this [`Storage`]'s integer type.
+    /// The value 0 of this [`Storage`] integer type.
     const ZERO: Self;
 
     /// The width, in bytes, of this [`Storage`] integer type.
