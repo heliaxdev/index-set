@@ -1,5 +1,6 @@
 //! Set data structure optimized to store [`usize`] values.
 
+use std::collections::btree_map::Entry;
 use std::collections::BTreeMap;
 
 /// The storage unit for the bits in an [`IndexSet`].
@@ -21,16 +22,36 @@ pub struct IndexSet {
     bit_sets: BTreeMap<usize, IndexSetStorage>,
 }
 
+#[inline]
+const fn calculate_map_and_set_indices(index: usize) -> (usize, usize) {
+    // these let exprs will get optimized into a single op,
+    // since they're ordered in sequence, which is nice
+    let map_index = index / INDEX_SET_STORAGE_WIDTH;
+    let bit_set_index = index % INDEX_SET_STORAGE_WIDTH;
+
+    (map_index, bit_set_index)
+}
+
 impl IndexSet {
     /// Add a new index to this [`IndexSet`].
     pub fn insert(&mut self, index: usize) {
-        // these let exprs will get optimized into a single op,
-        // since they're ordered in sequence, which is nice
-        let map_index = index / INDEX_SET_STORAGE_WIDTH;
-        let bit_set_index = index % INDEX_SET_STORAGE_WIDTH;
-
+        let (map_index, bit_set_index) = calculate_map_and_set_indices(index);
         let set = self.bit_sets.entry(map_index).or_insert(0);
         *set |= 1 << bit_set_index;
+    }
+
+    /// Remove an index from this [`IndexSet`].
+    pub fn remove(&mut self, index: usize) {
+        let (map_index, bit_set_index) = calculate_map_and_set_indices(index);
+        let entry = self.bit_sets.entry(map_index).and_modify(|set| {
+            *set &= !(1 << bit_set_index);
+        });
+        match entry {
+            Entry::Occupied(e) if *e.get() == 0 => {
+                e.remove();
+            }
+            _ => {}
+        }
     }
 
     /// Return an iterator over the indices in
