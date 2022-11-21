@@ -127,11 +127,15 @@ mod tests {
         }
 
         // remove elements from the set
-        for i in remove {
+        for i in remove.iter().copied() {
             set.remove(i);
         }
 
-        let expected: HashSet<_> = indices.into_iter().collect();
+        let expected: HashSet<_> = {
+            let indices: HashSet<_> = indices.into_iter().collect();
+            let remove: HashSet<_> = remove.into_iter().collect();
+            indices.difference(&remove).copied().collect()
+        };
         let got: HashSet<_> = set.iter().collect();
 
         assert_eq!(expected, got);
