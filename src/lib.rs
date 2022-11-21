@@ -75,7 +75,7 @@ impl IndexSet {
     /// Corresponds to a mutating set union operation,
     /// between `self` and `other`.
     #[inline]
-    pub fn merge(&mut self, other: &IndexSet) {
+    pub fn union(&mut self, other: &IndexSet) {
         for (&map_index, &other_set) in other.bit_sets.iter() {
             let set = self.bit_sets.entry(map_index).or_insert(0);
             *set |= other_set;
