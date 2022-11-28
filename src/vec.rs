@@ -96,12 +96,12 @@ impl<S: storage::Storage> VecIndexSet<S> {
     /// Corresponds to a mutating set union operation,
     /// between `self` and `other`.
     #[inline]
-    pub fn union(&mut self, _other: &VecIndexSet<S>) {
-        todo!()
-        //for (&map_index, &other_set) in other.bit_sets.iter() {
-        //    let set = self.bit_sets.entry(map_index).or_insert(S::ZERO);
-        //    *set |= other_set;
-        //}
+    pub fn union(&mut self, other: &VecIndexSet<S>) {
+        // naive implementation
+        for &(map_index, other_set) in other.bit_sets.iter() {
+            let set = self.lookup_or_zero(map_index);
+            *set |= other_set;
+        }
     }
 }
 
