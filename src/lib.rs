@@ -3,6 +3,7 @@
 pub mod btree;
 mod macros;
 mod storage;
+pub mod vec;
 
 /// Set data structure optimized to store [`usize`] values.
 pub type IndexSet<S = u64> = btree::BTreeIndexSet<S>;
