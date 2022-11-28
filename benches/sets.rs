@@ -2,7 +2,8 @@ use std::any::type_name;
 use std::collections::{BTreeSet, HashSet};
 
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use index_set::IndexSet;
+use index_set::btree::BTreeIndexSet;
+use index_set::vec::VecIndexSet;
 
 trait Set {
     fn new() -> Self
@@ -49,9 +50,9 @@ impl Set for BTreeSet<usize> {
     }
 }
 
-impl Set for IndexSet<u64> {
+impl Set for BTreeIndexSet<u64> {
     fn new() -> Self {
-        IndexSet::<u64>::default()
+        BTreeIndexSet::<u64>::default()
     }
 
     fn op_insert(&mut self, index: usize) {
@@ -67,9 +68,45 @@ impl Set for IndexSet<u64> {
     }
 }
 
-impl Set for IndexSet<u128> {
+impl Set for BTreeIndexSet<u128> {
     fn new() -> Self {
-        IndexSet::<u128>::default()
+        BTreeIndexSet::<u128>::default()
+    }
+
+    fn op_insert(&mut self, index: usize) {
+        self.insert(index);
+    }
+
+    fn op_remove(&mut self, index: usize) {
+        self.remove(index);
+    }
+
+    fn op_contains(&mut self, index: usize) -> bool {
+        self.contains(index)
+    }
+}
+
+impl Set for VecIndexSet<u64> {
+    fn new() -> Self {
+        VecIndexSet::<u64>::default()
+    }
+
+    fn op_insert(&mut self, index: usize) {
+        self.insert(index);
+    }
+
+    fn op_remove(&mut self, index: usize) {
+        self.remove(index);
+    }
+
+    fn op_contains(&mut self, index: usize) -> bool {
+        self.contains(index)
+    }
+}
+
+impl Set for VecIndexSet<u128> {
+    fn new() -> Self {
+        VecIndexSet::<u128>::default()
     }
 
     fn op_insert(&mut self, index: usize) {
@@ -117,15 +154,21 @@ criterion_group!(
     benches,
     bench_set_insert::<HashSet<usize>>,
     bench_set_insert::<BTreeSet<usize>>,
-    bench_set_insert::<IndexSet<u64>>,
-    bench_set_insert::<IndexSet<u128>>,
+    bench_set_insert::<BTreeIndexSet<u64>>,
+    bench_set_insert::<BTreeIndexSet<u128>>,
+    bench_set_insert::<VecIndexSet<u64>>,
+    bench_set_insert::<VecIndexSet<u128>>,
     bench_set_remove::<HashSet<usize>>,
     bench_set_remove::<BTreeSet<usize>>,
-    bench_set_remove::<IndexSet<u64>>,
-    bench_set_remove::<IndexSet<u128>>,
+    bench_set_remove::<BTreeIndexSet<u64>>,
+    bench_set_remove::<BTreeIndexSet<u128>>,
+    bench_set_remove::<VecIndexSet<u64>>,
+    bench_set_remove::<VecIndexSet<u128>>,
     bench_set_contains::<HashSet<usize>>,
     bench_set_contains::<BTreeSet<usize>>,
-    bench_set_contains::<IndexSet<u64>>,
-    bench_set_contains::<IndexSet<u128>>,
+    bench_set_contains::<BTreeIndexSet<u64>>,
+    bench_set_contains::<BTreeIndexSet<u128>>,
+    bench_set_contains::<VecIndexSet<u64>>,
+    bench_set_contains::<VecIndexSet<u128>>,
 );
 criterion_main!(benches);
