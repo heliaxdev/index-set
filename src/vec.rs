@@ -1,5 +1,7 @@
 //! Index set backed by a [`Vec`].
 
+use alloc::vec::Vec;
+
 use super::calculate_map_and_set_indices;
 use super::macros::index_set_tests_for;
 use super::storage;

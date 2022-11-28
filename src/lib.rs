@@ -1,5 +1,9 @@
 //! Set data structure optimized to store [`usize`] values.
 
+#![cfg_attr(not(test), no_std)]
+
+extern crate alloc;
+
 pub mod btree;
 mod macros;
 mod storage;

@@ -1,6 +1,6 @@
 //! Storage integers for a [`super::IndexSet`].
 
-use std::ops::{BitAnd, BitAndAssign, BitOrAssign, Not};
+use core::ops::{BitAnd, BitAndAssign, BitOrAssign, Not};
 
 macro_rules! impl_storage_for {
     ($primitive:ty) => {
@@ -37,7 +37,7 @@ pub trait Storage:
     const ZERO: Self;
 
     /// The width, in bytes, of this [`Storage`] integer type.
-    const WIDTH: usize = ::std::mem::size_of::<Self>();
+    const WIDTH: usize = ::core::mem::size_of::<Self>();
 
     /// Convert a [`usize`] to a value of [`Self`].
     fn from_usize(x: usize) -> Self;

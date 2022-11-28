@@ -1,7 +1,7 @@
 //! Index set backed by a [`BTreeMap`].
 
-use std::collections::btree_map::Entry;
-use std::collections::BTreeMap;
+use alloc::collections::btree_map::Entry;
+use alloc::collections::BTreeMap;
 
 use super::calculate_map_and_set_indices;
 use super::macros::index_set_tests_for;
