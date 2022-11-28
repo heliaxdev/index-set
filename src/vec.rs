@@ -83,7 +83,12 @@ impl<S: storage::Storage> VecIndexSet<S> {
     /// this [`VecIndexSet`], in ascending order.
     #[inline]
     pub fn iter(&self) -> impl Iterator<Item = usize> + '_ {
-        None.into_iter()
+        self.bit_sets.iter().flat_map(|&(map_index, set)| {
+            (0..S::WIDTH).into_iter().flat_map(move |bit_set_index| {
+                let is_bit_set = (set & S::from_usize(1 << bit_set_index)) != S::ZERO;
+                is_bit_set.then(|| map_index * S::WIDTH + bit_set_index)
+            })
+        })
     }
 
     /// Merge two [`VecIndexSet`] instances.
