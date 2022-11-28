@@ -7,6 +7,7 @@ use super::calculate_map_and_set_indices;
 use super::macros::index_set_tests_for;
 use super::storage;
 
+/// Index set backed by a [`BTreeMap`].
 #[derive(Default, Debug, Clone)]
 pub struct BTreeIndexSet<S = u64> {
     /// Map of indices to bit vectors, containing the actual boolean
