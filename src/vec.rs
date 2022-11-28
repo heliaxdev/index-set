@@ -1,7 +1,7 @@
 //! Index set backed by a [`Vec`].
 
 use super::calculate_map_and_set_indices;
-//use super::macros::index_set_tests_for;
+use super::macros::index_set_tests_for;
 use super::storage;
 
 /// Index set backed by a [`Vec`].
@@ -100,4 +100,4 @@ impl<S: storage::Storage> VecIndexSet<S> {
     }
 }
 
-//index_set_tests_for!(crate::btree::VecIndexSet::<u64>);
+index_set_tests_for!(crate::vec::VecIndexSet::<u64>);
