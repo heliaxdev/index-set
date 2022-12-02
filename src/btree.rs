@@ -2,6 +2,12 @@
 
 use alloc::collections::btree_map::Entry;
 use alloc::collections::BTreeMap;
+#[cfg(feature = "serialize-borsh")]
+use alloc::{format, string::ToString};
+#[cfg(feature = "serialize-borsh")]
+use borsh::{BorshDeserialize, BorshSchema, BorshSerialize};
+#[cfg(feature = "serialize-serde")]
+use serde::{Deserialize, Serialize};
 
 use super::calculate_map_and_set_indices;
 use super::macros::index_set_tests_for;
@@ -9,6 +15,11 @@ use super::storage;
 
 /// Index set backed by a [`BTreeMap`].
 #[derive(Default, Debug, Clone)]
+#[cfg_attr(
+    feature = "serialize-borsh",
+    derive(BorshSerialize, BorshDeserialize, BorshSchema)
+)]
+#[cfg_attr(feature = "serialize-serde", derive(Serialize, Deserialize))]
 pub struct BTreeIndexSet<S = u64> {
     /// Map of indices to bit vectors, containing the actual boolean
     /// values to be asserted.
