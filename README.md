@@ -1,6 +1,6 @@
 # index-set
 
-A set data structure optimized to store sparsely distributed `usize` values.
+Set data structures optimized to store sparsely distributed `usize` values.
 
 ## `#![no_std]`
 
