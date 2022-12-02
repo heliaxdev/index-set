@@ -14,7 +14,7 @@ use super::macros::index_set_tests_for;
 use super::storage;
 
 /// Index set backed by a [`BTreeMap`].
-#[derive(Default, Debug, Clone)]
+#[derive(Default, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cfg_attr(
     feature = "serialize-borsh",
     derive(BorshSerialize, BorshDeserialize, BorshSchema)

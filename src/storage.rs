@@ -1,5 +1,6 @@
 //! Storage integers for a [`super::IndexSet`].
 
+use core::hash::Hash;
 use core::ops::{BitAnd, BitAndAssign, BitOrAssign, Not};
 
 macro_rules! impl_storage_for {
@@ -26,6 +27,11 @@ impl_storage_for!(u128);
 /// Any primitive unsigned integer type will do.
 pub trait Storage:
     Sized
+    + Hash
+    + PartialOrd
+    + Ord
+    + PartialEq
+    + Eq
     + Copy
     + PartialEq<Self>
     + BitAnd<Output = Self>
