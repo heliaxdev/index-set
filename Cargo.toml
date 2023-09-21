@@ -16,9 +16,9 @@ features = ["alloc", "derive"]
 
 [dependencies.borsh]
 optional = true
-version = "0.9"
+version = "1.0.0-alpha.4"
 default-features = false
-
+features = ["schema", "derive"]
 [dev-dependencies]
 criterion = "0.4"
 
