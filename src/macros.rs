@@ -1,5 +1,29 @@
 //! Macro definitions.
 
+macro_rules! index_set_impl_from_iterator {
+    ($($Set:tt)*) => {
+        impl<S: crate::storage::Storage> FromIterator<usize>
+            for $($Set)*<S>
+        {
+            #[inline]
+            fn from_iter<T>(iter: T) -> Self
+            where
+                T: IntoIterator<Item = usize>
+            {
+                use crate::IndexSet;
+
+                let mut set = Self::new();
+
+                for item in iter {
+                    set.insert(item);
+                }
+
+                set
+            }
+        }
+    };
+}
+
 macro_rules! index_set_impl_extend {
     ($($Set:tt)*) => {
         impl<S: crate::storage::Storage> Extend<usize> for $($Set)*<S> {
@@ -136,4 +160,5 @@ macro_rules! index_set_tests_for {
 
 pub(crate) use index_set_impl_extend;
 pub(crate) use index_set_impl_from;
+pub(crate) use index_set_impl_from_iterator;
 pub(crate) use index_set_tests_for;
