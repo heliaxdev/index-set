@@ -154,6 +154,17 @@ macro_rules! index_set_tests_for {
 
                 assert_eq!(expected, got);
             }
+
+            /// Test creating an index from an iterator.
+            #[test]
+            fn test_index_set_from_iter() {
+                let indices = [1, 4, 6, 3, 1, 100, 123, 12, 3];
+
+                let got: $Set = indices.iter().copied().collect();
+                let expected: ::std::collections::BTreeSet<_> = indices.iter().copied().collect();
+
+                assert_eq!(expected, got.into());
+            }
         }
     };
 }
