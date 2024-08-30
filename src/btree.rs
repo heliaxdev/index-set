@@ -97,7 +97,7 @@ impl<S: storage::Storage> IndexSet for BTreeIndexSet<S> {
     #[inline]
     fn iter(&self) -> impl Iterator<Item = usize> + '_ {
         self.bit_sets.iter().flat_map(|(&map_index, &set)| {
-            (0..S::WIDTH).flat_map(move |bit_set_index| {
+            (0..S::WIDTH).filter_map(move |bit_set_index| {
                 let is_bit_set = (set & S::from_usize(1 << bit_set_index)) != S::ZERO;
                 if is_bit_set {
                     Some(map_index * S::WIDTH + bit_set_index)
