@@ -12,7 +12,12 @@ macro_rules! index_set_impl_from_iterator {
             {
                 use crate::IndexSet;
 
-                let mut set = Self::new();
+                let iter = iter.into_iter();
+                let bounded_cap = crate::safe_iter_reserve_cap(
+                    &iter,
+                );
+
+                let mut set = Self::with_capacity(bounded_cap);
 
                 for item in iter {
                     set.insert(item);
@@ -33,6 +38,13 @@ macro_rules! index_set_impl_extend {
                 T: IntoIterator<Item = usize>
             {
                 use crate::IndexSet;
+
+                let iter = iter.into_iter();
+                let bounded_cap = crate::safe_iter_reserve_cap(
+                    &iter,
+                );
+
+                self.reserve(bounded_cap);
 
                 for item in iter {
                     self.insert(item);
@@ -91,6 +103,17 @@ macro_rules! index_set_impl_from {
                 }
 
                 vec
+            }
+        }
+
+        impl<I, S> From<I> for $($Set)*<S>
+        where
+            I: IntoIterator<Item = usize>,
+            S: crate::storage::Storage,
+        {
+            #[inline]
+            fn from(iter: I) -> Self {
+                Self::from_iter(iter)
             }
         }
     };

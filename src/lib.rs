@@ -46,6 +46,18 @@ pub trait IndexSet {
 }
 
 #[inline]
+fn safe_iter_reserve_cap<I>(iter: &I) -> usize
+where
+    I: Iterator,
+{
+    let (min_cap, _) = iter.size_hint();
+
+    // NB: guard against malicious impls
+    // with a reasonable higher bound
+    min_cap.min(256)
+}
+
+#[inline]
 const fn calculate_map_and_set_indices<S>(index: usize) -> (usize, usize)
 where
     S: storage::Storage,
