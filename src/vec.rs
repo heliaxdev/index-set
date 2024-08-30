@@ -136,6 +136,11 @@ impl<S: storage::Storage> IndexSet for VecIndexSet<S> {
             *set |= other_set;
         }
     }
+
+    #[inline]
+    fn reserve(&mut self, size: usize) {
+        self.bit_sets.reserve(size);
+    }
 }
 
 index_set_impl_from!(crate::vec::VecIndexSet);

@@ -37,6 +37,12 @@ pub trait IndexSet {
     /// Corresponds to a mutating set union operation,
     /// between `self` and `other`.
     fn union(&mut self, other: &Self);
+
+    /// Attempt to reserve space for the specified
+    /// numer of additional [`usize`] elements.
+    fn reserve(&mut self, _size: usize) {
+        // NOOP
+    }
 }
 
 #[inline]
