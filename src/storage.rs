@@ -12,6 +12,11 @@ macro_rules! impl_storage_for {
             fn from_usize(x: usize) -> $primitive {
                 x as $primitive
             }
+
+            #[inline(always)]
+            fn num_of_high_bits(self) -> usize {
+                self.count_ones() as usize
+            }
         }
     };
 }
@@ -47,4 +52,7 @@ pub trait Storage:
 
     /// Convert a [`usize`] to a value of [`Self`].
     fn from_usize(x: usize) -> Self;
+
+    /// Count the number of bits set in [`Self`].
+    fn num_of_high_bits(self) -> usize;
 }
