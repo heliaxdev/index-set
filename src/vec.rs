@@ -29,6 +29,13 @@ pub struct VecIndexSet<S = u64> {
 }
 
 impl<S: storage::Storage> VecIndexSet<S> {
+    /// Create a new [`VecIndexSet`].
+    pub const fn new() -> Self {
+        Self {
+            bit_sets: Vec::new(),
+        }
+    }
+
     /// Lookup the bit set at `map_index`, or initialize it
     /// with zero, if it doesn't exist.
     #[inline]

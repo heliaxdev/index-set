@@ -30,6 +30,13 @@ pub struct BTreeIndexSet<S = u64> {
 }
 
 impl<S: storage::Storage> BTreeIndexSet<S> {
+    /// Create a new [`BTreeIndexSet`].
+    pub const fn new() -> Self {
+        Self {
+            bit_sets: BTreeMap::new(),
+        }
+    }
+
     /// Add a new index to this [`BTreeIndexSet`].
     pub fn insert(&mut self, index: usize) {
         let (map_index, bit_set_index) = calculate_map_and_set_indices::<S>(index);
