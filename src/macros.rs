@@ -1,5 +1,59 @@
 //! Macro definitions.
 
+macro_rules! index_set_impl_from {
+    ($($Set:tt)*) => {
+        impl<S: crate::storage::Storage> From<$($Set)*<S>>
+            for alloc::collections::BTreeSet<usize>
+        {
+            #[inline]
+            fn from(index_set: $($Set)*<S>) -> Self {
+                Self::from(&index_set)
+            }
+        }
+
+        impl<S: crate::storage::Storage> From<&$($Set)*<S>>
+            for alloc::collections::BTreeSet<usize>
+        {
+            fn from(index_set: &$($Set)*<S>) -> Self {
+                use crate::IndexSet;
+
+                let mut btree_set = Self::new();
+
+                for index in index_set.iter() {
+                    btree_set.insert(index);
+                }
+
+                btree_set
+            }
+        }
+
+        impl<S: crate::storage::Storage> From<$($Set)*<S>>
+            for alloc::vec::Vec<usize>
+        {
+            #[inline]
+            fn from(index_set: $($Set)*<S>) -> Self {
+                Self::from(&index_set)
+            }
+        }
+
+        impl<S: crate::storage::Storage> From<&$($Set)*<S>>
+            for alloc::vec::Vec<usize>
+        {
+            fn from(index_set: &$($Set)*<S>) -> Self {
+                use crate::IndexSet;
+
+                let mut vec = Self::new();
+
+                for index in index_set.iter() {
+                    vec.push(index);
+                }
+
+                vec
+            }
+        }
+    };
+}
+
 macro_rules! index_set_tests_for {
     ($Set:ty) => {
         #[cfg(test)]
@@ -63,3 +117,5 @@ macro_rules! index_set_tests_for {
 }
 
 pub(crate) use index_set_tests_for;
+
+pub(crate) use index_set_impl_from;
