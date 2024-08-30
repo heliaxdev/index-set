@@ -9,7 +9,7 @@ macro_rules! index_set_tests_for {
             /// Test index insert ops.
             #[test]
             fn test_index_set_insert() {
-                let mut set = <$Set>::default();
+                let mut set = <$Set>::new();
                 let mut indices = vec![1, 4, 6, 3, 1, 100, 123, 12, 3];
 
                 // insert some elements into the set
@@ -35,7 +35,7 @@ macro_rules! index_set_tests_for {
             /// Test index remove ops.
             #[test]
             fn test_index_set_remove() {
-                let mut set = <$Set>::default();
+                let mut set = <$Set>::new();
                 let indices = [1, 4, 6, 3, 1, 100, 123, 12, 3];
                 let remove = [100, 6, 100, 12, 123, 3];
 
