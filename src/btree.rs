@@ -39,6 +39,18 @@ impl<S> BTreeIndexSet<S> {
             bit_sets: BTreeMap::new(),
         }
     }
+
+    /// Create a new [`BTreeIndexSet`] with the given capacity.
+    ///
+    /// ## Warning
+    ///
+    /// In the current implementation, this method is a stub.
+    /// It doesn't actually provide any benefit over calling
+    /// [`BTreeIndexSet::new`].
+    #[inline]
+    pub fn with_capacity(_capacity: usize) -> Self {
+        Self::new()
+    }
 }
 
 impl<S: storage::Storage> IndexSet for BTreeIndexSet<S> {

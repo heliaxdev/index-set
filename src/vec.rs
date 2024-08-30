@@ -38,6 +38,14 @@ impl<S> VecIndexSet<S> {
             bit_sets: Vec::new(),
         }
     }
+
+    /// Create a new [`VecIndexSet`] with the given capacity.
+    #[inline]
+    pub fn with_capacity(capacity: usize) -> Self {
+        Self {
+            bit_sets: Vec::with_capacity(capacity),
+        }
+    }
 }
 
 impl<S: storage::Storage> VecIndexSet<S> {
