@@ -104,7 +104,11 @@ impl<S: storage::Storage> IndexSet for VecIndexSet<S> {
         self.bit_sets.iter().flat_map(|&(map_index, set)| {
             (0..S::WIDTH).flat_map(move |bit_set_index| {
                 let is_bit_set = (set & S::from_usize(1 << bit_set_index)) != S::ZERO;
-                is_bit_set.then_some(map_index * S::WIDTH + bit_set_index)
+                if is_bit_set {
+                    Some(map_index * S::WIDTH + bit_set_index)
+                } else {
+                    None
+                }
             })
         })
     }
