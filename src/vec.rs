@@ -42,13 +42,11 @@ impl<S: storage::Storage> VecIndexSet<S> {
     /// with zero, if it doesn't exist, returning the initialized index.
     #[inline]
     fn lookup_or_initialize_pair(&mut self, map_index: usize) -> usize {
-        self.lookup_pair(map_index).map_or_else(
-            |insert_at_index| {
+        self.lookup_pair(map_index)
+            .unwrap_or_else(|insert_at_index| {
                 self.bit_sets.insert(insert_at_index, (map_index, S::ZERO));
                 insert_at_index
-            },
-            |found_at_index| found_at_index,
-        )
+            })
     }
 
     /// Lookup the vec index of the bit set at `map_index`.
@@ -97,7 +95,7 @@ impl<S: storage::Storage> VecIndexSet<S> {
     #[inline]
     pub fn iter(&self) -> impl Iterator<Item = usize> + '_ {
         self.bit_sets.iter().flat_map(|&(map_index, set)| {
-            (0..S::WIDTH).into_iter().flat_map(move |bit_set_index| {
+            (0..S::WIDTH).flat_map(move |bit_set_index| {
                 let is_bit_set = (set & S::from_usize(1 << bit_set_index)) != S::ZERO;
                 is_bit_set.then_some(map_index * S::WIDTH + bit_set_index)
             })
