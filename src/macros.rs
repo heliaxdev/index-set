@@ -165,6 +165,37 @@ macro_rules! index_set_tests_for {
 
                 assert_eq!(expected, got.into());
             }
+
+            /// Test index set length related ops.
+            #[test]
+            fn test_index_set_len_and_is_empty() {
+                let indices_1 = [1, 4, 6, 3];
+                let indices_2 = [2, 100, 123, 12, 5];
+
+                let mut set = <$Set>::new();
+
+                assert!(set.is_empty());
+
+                set.extend(indices_1.iter().copied());
+                assert!(!set.is_empty());
+                assert_eq!(set.len(), indices_1.len());
+
+                set.extend(indices_2.iter().copied());
+                assert!(!set.is_empty());
+                assert_eq!(set.len(), indices_1.len() + indices_2.len());
+
+                for item in indices_1.iter().copied() {
+                    set.remove(item);
+                }
+                assert!(!set.is_empty());
+                assert_eq!(set.len(), indices_2.len());
+
+                for item in indices_2.iter().copied() {
+                    set.remove(item);
+                }
+                assert!(set.is_empty());
+                assert_eq!(set.len(), 0);
+            }
         }
     };
 }
