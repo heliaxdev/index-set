@@ -12,6 +12,7 @@ use serde::{Deserialize, Serialize};
 use super::calculate_map_and_set_indices;
 use super::macros::index_set_tests_for;
 use super::storage;
+use super::IndexSet;
 
 /// Index set backed by a [`BTreeMap`].
 #[derive(Default, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -36,16 +37,16 @@ impl<S: storage::Storage> BTreeIndexSet<S> {
             bit_sets: BTreeMap::new(),
         }
     }
+}
 
-    /// Add a new index to this [`BTreeIndexSet`].
-    pub fn insert(&mut self, index: usize) {
+impl<S: storage::Storage> IndexSet for BTreeIndexSet<S> {
+    fn insert(&mut self, index: usize) {
         let (map_index, bit_set_index) = calculate_map_and_set_indices::<S>(index);
         let set = self.bit_sets.entry(map_index).or_insert(S::ZERO);
         *set |= S::from_usize(1 << bit_set_index);
     }
 
-    /// Remove an index from this [`BTreeIndexSet`].
-    pub fn remove(&mut self, index: usize) {
+    fn remove(&mut self, index: usize) {
         let (map_index, bit_set_index) = calculate_map_and_set_indices::<S>(index);
         let entry = self.bit_sets.entry(map_index).and_modify(|set| {
             *set &= !S::from_usize(1 << bit_set_index);
@@ -58,8 +59,7 @@ impl<S: storage::Storage> BTreeIndexSet<S> {
         }
     }
 
-    /// Check the presence of an index in this [`BTreeIndexSet`].
-    pub fn contains(&self, index: usize) -> bool {
+    fn contains(&self, index: usize) -> bool {
         let (map_index, bit_set_index) = calculate_map_and_set_indices::<S>(index);
         self.bit_sets
             .get(&map_index)
@@ -67,10 +67,8 @@ impl<S: storage::Storage> BTreeIndexSet<S> {
             .unwrap_or(false)
     }
 
-    /// Return an iterator over the indices in
-    /// this [`BTreeIndexSet`], in ascending order.
     #[inline]
-    pub fn iter(&self) -> impl Iterator<Item = usize> + '_ {
+    fn iter(&self) -> impl Iterator<Item = usize> + '_ {
         self.bit_sets.iter().flat_map(|(&map_index, &set)| {
             (0..S::WIDTH).flat_map(move |bit_set_index| {
                 let is_bit_set = (set & S::from_usize(1 << bit_set_index)) != S::ZERO;
@@ -79,12 +77,8 @@ impl<S: storage::Storage> BTreeIndexSet<S> {
         })
     }
 
-    /// Merge two [`BTreeIndexSet`] instances.
-    ///
-    /// Corresponds to a mutating set union operation,
-    /// between `self` and `other`.
     #[inline]
-    pub fn union(&mut self, other: &BTreeIndexSet<S>) {
+    fn union(&mut self, other: &BTreeIndexSet<S>) {
         for (&map_index, &other_set) in other.bit_sets.iter() {
             let set = self.bit_sets.entry(map_index).or_insert(S::ZERO);
             *set |= other_set;

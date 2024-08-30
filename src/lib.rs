@@ -9,6 +9,28 @@ mod macros;
 mod storage;
 pub mod vec;
 
+/// Public interface of any index set implementation.
+pub trait IndexSet {
+    /// Add a new index to this [`IndexSet`].
+    fn insert(&mut self, index: usize);
+
+    /// Remove an index from this [`IndexSet`].
+    fn remove(&mut self, index: usize);
+
+    /// Check the presence of an index in this [`IndexSet`].
+    fn contains(&self, index: usize) -> bool;
+
+    /// Return an iterator over the indices in
+    /// this [`IndexSet`], in ascending order.
+    fn iter(&self) -> impl Iterator<Item = usize> + '_;
+
+    /// Merge two [`IndexSet`] instances.
+    ///
+    /// Corresponds to a mutating set union operation,
+    /// between `self` and `other`.
+    fn union(&mut self, other: &Self);
+}
+
 #[inline]
 const fn calculate_map_and_set_indices<S>(index: usize) -> (usize, usize)
 where

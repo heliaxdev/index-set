@@ -11,6 +11,7 @@ use serde::{Deserialize, Serialize};
 use super::calculate_map_and_set_indices;
 use super::macros::index_set_tests_for;
 use super::storage;
+use super::IndexSet;
 
 /// Index set backed by a [`Vec`].
 #[derive(Default, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -61,16 +62,16 @@ impl<S: storage::Storage> VecIndexSet<S> {
     fn lookup_pair(&self, map_index: usize) -> Result<usize, usize> {
         self.bit_sets.binary_search_by_key(&map_index, |&(i, _)| i)
     }
+}
 
-    /// Add a new index to this [`VecIndexSet`].
-    pub fn insert(&mut self, index: usize) {
+impl<S: storage::Storage> IndexSet for VecIndexSet<S> {
+    fn insert(&mut self, index: usize) {
         let (map_index, bit_set_index) = calculate_map_and_set_indices::<S>(index);
         let set = self.lookup_or_zero(map_index);
         *set |= S::from_usize(1 << bit_set_index);
     }
 
-    /// Remove an index from this [`VecIndexSet`].
-    pub fn remove(&mut self, index: usize) {
+    fn remove(&mut self, index: usize) {
         let (map_index, bit_set_index) = calculate_map_and_set_indices::<S>(index);
         let maybe_remove_index = self.lookup_pair(map_index).ok().and_then(|pair_index| {
             let (_, set) = &mut self.bit_sets[pair_index];
@@ -86,8 +87,7 @@ impl<S: storage::Storage> VecIndexSet<S> {
         }
     }
 
-    /// Check the presence of an index in this [`VecIndexSet`].
-    pub fn contains(&self, index: usize) -> bool {
+    fn contains(&self, index: usize) -> bool {
         let (map_index, bit_set_index) = calculate_map_and_set_indices::<S>(index);
         self.lookup_pair(map_index)
             .map(|pair_index| {
@@ -97,10 +97,8 @@ impl<S: storage::Storage> VecIndexSet<S> {
             .unwrap_or(false)
     }
 
-    /// Return an iterator over the indices in
-    /// this [`VecIndexSet`], in ascending order.
     #[inline]
-    pub fn iter(&self) -> impl Iterator<Item = usize> + '_ {
+    fn iter(&self) -> impl Iterator<Item = usize> + '_ {
         self.bit_sets.iter().flat_map(|&(map_index, set)| {
             (0..S::WIDTH).flat_map(move |bit_set_index| {
                 let is_bit_set = (set & S::from_usize(1 << bit_set_index)) != S::ZERO;
@@ -109,12 +107,8 @@ impl<S: storage::Storage> VecIndexSet<S> {
         })
     }
 
-    /// Merge two [`VecIndexSet`] instances.
-    ///
-    /// Corresponds to a mutating set union operation,
-    /// between `self` and `other`.
     #[inline]
-    pub fn union(&mut self, other: &VecIndexSet<S>) {
+    fn union(&mut self, other: &VecIndexSet<S>) {
         // naive implementation
         for &(map_index, other_set) in other.bit_sets.iter() {
             let set = self.lookup_or_zero(map_index);

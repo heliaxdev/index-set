@@ -4,6 +4,8 @@ macro_rules! index_set_tests_for {
     ($Set:ty) => {
         #[cfg(test)]
         mod tests {
+            use crate::IndexSet;
+
             /// Test index insert ops.
             #[test]
             fn test_index_set_insert() {
