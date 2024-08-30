@@ -30,7 +30,7 @@ pub struct BTreeIndexSet<S = u64> {
     bit_sets: BTreeMap<usize, S>,
 }
 
-impl<S: storage::Storage> BTreeIndexSet<S> {
+impl<S> BTreeIndexSet<S> {
     /// Create a new [`BTreeIndexSet`].
     pub const fn new() -> Self {
         Self {
