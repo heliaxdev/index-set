@@ -11,6 +11,14 @@ pub mod vec;
 
 /// Public interface of any index set implementation.
 pub trait IndexSet {
+    /// Return the number of [`usize`] values present
+    /// in this [`IndexSet`].
+    fn len(&self) -> usize;
+
+    /// Checks if this [`IndexSet`] has no inner indexes
+    /// stored within.
+    fn is_empty(&self) -> bool;
+
     /// Add a new index to this [`IndexSet`].
     fn insert(&mut self, index: usize);
 

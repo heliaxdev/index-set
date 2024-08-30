@@ -67,6 +67,19 @@ impl<S: storage::Storage> VecIndexSet<S> {
 }
 
 impl<S: storage::Storage> IndexSet for VecIndexSet<S> {
+    #[inline]
+    fn len(&self) -> usize {
+        self.bit_sets
+            .iter()
+            .map(|(_, set)| set.num_of_high_bits())
+            .sum::<usize>()
+    }
+
+    #[inline]
+    fn is_empty(&self) -> bool {
+        self.bit_sets.is_empty()
+    }
+
     fn insert(&mut self, index: usize) {
         let (map_index, bit_set_index) = calculate_map_and_set_indices::<S>(index);
         let set = self.lookup_or_zero(map_index);

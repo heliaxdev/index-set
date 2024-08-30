@@ -40,6 +40,19 @@ impl<S> BTreeIndexSet<S> {
 }
 
 impl<S: storage::Storage> IndexSet for BTreeIndexSet<S> {
+    #[inline]
+    fn len(&self) -> usize {
+        self.bit_sets
+            .values()
+            .map(|set| set.num_of_high_bits())
+            .sum::<usize>()
+    }
+
+    #[inline]
+    fn is_empty(&self) -> bool {
+        self.bit_sets.is_empty()
+    }
+
     fn insert(&mut self, index: usize) {
         let (map_index, bit_set_index) = calculate_map_and_set_indices::<S>(index);
         let set = self.bit_sets.entry(map_index).or_insert(S::ZERO);
