@@ -4,6 +4,7 @@ use std::collections::{BTreeSet, HashSet};
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
 use index_set::btree::BTreeIndexSet;
 use index_set::vec::VecIndexSet;
+use index_set::IndexSet;
 
 trait Set {
     fn new() -> Self
