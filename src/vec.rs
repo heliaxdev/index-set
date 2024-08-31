@@ -13,6 +13,33 @@ use super::macros::*;
 use super::storage;
 use super::IndexSet;
 
+#[cfg(feature = "serialize-serde")]
+mod serde_deserialize {
+    use alloc::vec::Vec;
+
+    use serde::{Deserialize, Deserializer};
+
+    /// Deserialize a [`VecIndexSet`] from serde data.
+    pub fn from<'de, D, S>(deserializer: D) -> Result<Vec<(usize, S)>, D::Error>
+    where
+        D: Deserializer<'de>,
+        S: Deserialize<'de>,
+    {
+        let bit_sets: Vec<(usize, S)> = Deserialize::deserialize(deserializer)?;
+        for window in bit_sets.windows(2) {
+            let &[(a, _), (b, _)] = window else {
+                unreachable!()
+            };
+            if a > b {
+                return Err(serde::de::Error::custom(
+                    "VecIndexSet should have been sorted",
+                ));
+            }
+        }
+        Ok(bit_sets)
+    }
+}
+
 #[cfg(feature = "serialize-borsh")]
 mod borsh_deserialize {
     use super::*;
@@ -56,6 +83,14 @@ pub struct VecIndexSet<S = u64> {
     #[cfg_attr(
         feature = "serialize-borsh",
         borsh(deserialize_with = "borsh_deserialize::from")
+    )]
+    #[cfg_attr(
+        feature = "serialize-serde",
+        serde(deserialize_with = "serde_deserialize::from")
+    )]
+    #[cfg_attr(
+        feature = "serialize-serde",
+        serde(bound(deserialize = "S: Deserialize<'de>"))
     )]
     bit_sets: Vec<(usize, S)>,
 }

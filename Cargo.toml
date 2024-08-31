@@ -26,6 +26,7 @@ features = ["unstable__schema", "derive"]
 
 [dev-dependencies]
 criterion = "0.4"
+serde_json = "1.0.127"
 
 [[bench]]
 name = "sets"

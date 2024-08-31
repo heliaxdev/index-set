@@ -307,6 +307,45 @@ macro_rules! index_set_tests_for {
                 _ = Set::try_from_slice(&valid).unwrap();
                 _ = Set::try_from_slice(&invalid).unwrap_err();
             }
+
+            /// Test serde serialization.
+            #[test]
+            #[cfg(feature = "serialize-serde")]
+            fn test_index_set_serde_decode() {
+                use std::collections::HashMap;
+
+                if !std::any::type_name::<Set>().contains("VecIndexSet") {
+                    // NB: we're only testing VecIndexSet
+                    return;
+                }
+
+                let one = $type::try_from(1).unwrap();
+
+                let valid = HashMap::from([(
+                    "bit_sets".to_string(),
+                    [
+                        (0usize, one),
+                        (1, one),
+                        (2, one),
+                        (3, one),
+                    ],
+                )]);
+                let invalid = HashMap::from([(
+                    "bit_sets".to_string(),
+                    [
+                        (0usize, one),
+                        (1, one),
+                        (3, one),
+                        (2, one),
+                    ],
+                )]);
+
+                let valid = serde_json::to_string(&valid).unwrap();
+                let invalid = serde_json::to_string(&invalid).unwrap();
+
+                _ = serde_json::from_str::<Set>(&valid).unwrap();
+                _ = serde_json::from_str::<Set>(&invalid).unwrap_err();
+            }
         }
     };
 }
