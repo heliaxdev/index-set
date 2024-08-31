@@ -13,6 +13,32 @@ use super::macros::*;
 use super::storage;
 use super::IndexSet;
 
+#[cfg(feature = "serialize-borsh")]
+mod borsh_deserialize {
+    use super::*;
+
+    /// Deserialize a [`VecIndexSet`] from borsh data.
+    pub fn from<R, S>(reader: &mut R) -> Result<Vec<(usize, S)>, borsh::io::Error>
+    where
+        R: borsh::io::Read,
+        S: borsh::de::BorshDeserialize,
+    {
+        let bit_sets: Vec<(usize, S)> = borsh::BorshDeserialize::deserialize_reader(reader)?;
+        for window in bit_sets.windows(2) {
+            let &[(a, _), (b, _)] = window else {
+                unreachable!()
+            };
+            if a > b {
+                return Err(borsh::io::Error::new(
+                    borsh::io::ErrorKind::Other,
+                    "VecIndexSet should have been sorted",
+                ));
+            }
+        }
+        Ok(bit_sets)
+    }
+}
+
 /// Index set backed by a [`Vec`].
 #[derive(Default, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cfg_attr(
@@ -20,12 +46,17 @@ use super::IndexSet;
     derive(BorshSerialize, BorshDeserialize, BorshSchema)
 )]
 #[cfg_attr(feature = "serialize-serde", derive(Serialize, Deserialize))]
+#[repr(transparent)]
 pub struct VecIndexSet<S = u64> {
     /// Pairs of indices to bit vectors, containing the actual boolean
     /// values to be asserted.
     ///
     /// If the bit `B` is set, at the bit vector with index `S`, then
     /// the index `S::WIDTH * S + B` is in the set.
+    #[cfg_attr(
+        feature = "serialize-borsh",
+        borsh(deserialize_with = "borsh_deserialize::from")
+    )]
     bit_sets: Vec<(usize, S)>,
 }
 

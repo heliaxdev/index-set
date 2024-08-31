@@ -273,6 +273,40 @@ macro_rules! index_set_tests_for {
                 set.union(&other);
                 assert_eq!(set, expected);
             }
+
+            /// Test borsh serialization.
+            #[test]
+            #[cfg(feature = "serialize-borsh")]
+            fn test_index_set_borsh_decode() {
+                use borsh::BorshDeserialize;
+
+                let one = $type::try_from(1).unwrap();
+
+                let valid = (
+                    4u32,
+                    [
+                        (0usize, one),
+                        (1, one),
+                        (2, one),
+                        (3, one),
+                    ],
+                );
+                let invalid = (
+                    4u32,
+                    [
+                        (0usize, one),
+                        (1, one),
+                        (3, one),
+                        (2, one),
+                    ],
+                );
+
+                let valid = borsh::to_vec(&valid).unwrap();
+                let invalid = borsh::to_vec(&invalid).unwrap();
+
+                _ = Set::try_from_slice(&valid).unwrap();
+                _ = Set::try_from_slice(&invalid).unwrap_err();
+            }
         }
     };
 }

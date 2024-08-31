@@ -5,6 +5,10 @@ edition = "2021"
 
 [features]
 default = []
+testing = [
+    "serialize-serde",
+    "serialize-borsh",
+]
 serialize-serde = ["serde"]
 serialize-borsh = ["borsh"]
 
