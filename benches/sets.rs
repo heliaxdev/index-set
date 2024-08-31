@@ -6,8 +6,25 @@ use index_set::btree::BTreeIndexSet;
 use index_set::vec::VecIndexSet;
 use index_set::IndexSet;
 
+#[derive(Copy, Clone)]
+enum SetupFor {
+    Insert,
+    Remove,
+    Contains,
+}
+
+impl SetupFor {
+    fn name(&self) -> &'static str {
+        match self {
+            Self::Insert => "insert",
+            Self::Remove => "remove",
+            Self::Contains => "contains",
+        }
+    }
+}
+
 trait Set {
-    fn new() -> Self
+    fn setup(setup_for: SetupFor) -> Self
     where
         Self: Sized;
     fn op_insert(&mut self, index: usize);
@@ -16,8 +33,19 @@ trait Set {
 }
 
 impl Set for HashSet<usize> {
-    fn new() -> Self {
-        Self::new()
+    fn setup(setup_for: SetupFor) -> Self {
+        match setup_for {
+            SetupFor::Insert => Self::new(),
+            SetupFor::Remove | SetupFor::Contains => {
+                let mut set = Self::new();
+
+                for i in 0..1000 {
+                    set.insert(i);
+                }
+
+                set
+            }
+        }
     }
 
     fn op_insert(&mut self, index: usize) {
@@ -34,8 +62,19 @@ impl Set for HashSet<usize> {
 }
 
 impl Set for BTreeSet<usize> {
-    fn new() -> Self {
-        Self::new()
+    fn setup(setup_for: SetupFor) -> Self {
+        match setup_for {
+            SetupFor::Insert => Self::new(),
+            SetupFor::Remove | SetupFor::Contains => {
+                let mut set = Self::new();
+
+                for i in 0..1000 {
+                    set.insert(i);
+                }
+
+                set
+            }
+        }
     }
 
     fn op_insert(&mut self, index: usize) {
@@ -52,8 +91,19 @@ impl Set for BTreeSet<usize> {
 }
 
 impl Set for BTreeIndexSet<u64> {
-    fn new() -> Self {
-        BTreeIndexSet::<u64>::default()
+    fn setup(setup_for: SetupFor) -> Self {
+        match setup_for {
+            SetupFor::Insert => Self::new(),
+            SetupFor::Remove | SetupFor::Contains => {
+                let mut set = Self::new();
+
+                for i in 0..1000 {
+                    set.insert(i);
+                }
+
+                set
+            }
+        }
     }
 
     fn op_insert(&mut self, index: usize) {
@@ -70,8 +120,19 @@ impl Set for BTreeIndexSet<u64> {
 }
 
 impl Set for BTreeIndexSet<u128> {
-    fn new() -> Self {
-        BTreeIndexSet::<u128>::default()
+    fn setup(setup_for: SetupFor) -> Self {
+        match setup_for {
+            SetupFor::Insert => Self::new(),
+            SetupFor::Remove | SetupFor::Contains => {
+                let mut set = Self::new();
+
+                for i in 0..1000 {
+                    set.insert(i);
+                }
+
+                set
+            }
+        }
     }
 
     fn op_insert(&mut self, index: usize) {
@@ -88,8 +149,19 @@ impl Set for BTreeIndexSet<u128> {
 }
 
 impl Set for VecIndexSet<u64> {
-    fn new() -> Self {
-        VecIndexSet::<u64>::default()
+    fn setup(setup_for: SetupFor) -> Self {
+        match setup_for {
+            SetupFor::Insert => Self::new(),
+            SetupFor::Remove | SetupFor::Contains => {
+                let mut set = Self::new();
+
+                for i in 0..1000 {
+                    set.insert(i);
+                }
+
+                set
+            }
+        }
     }
 
     fn op_insert(&mut self, index: usize) {
@@ -106,8 +178,19 @@ impl Set for VecIndexSet<u64> {
 }
 
 impl Set for VecIndexSet<u128> {
-    fn new() -> Self {
-        VecIndexSet::<u128>::default()
+    fn setup(setup_for: SetupFor) -> Self {
+        match setup_for {
+            SetupFor::Insert => Self::new(),
+            SetupFor::Remove | SetupFor::Contains => {
+                let mut set = Self::new();
+
+                for i in 0..1000 {
+                    set.insert(i);
+                }
+
+                set
+            }
+        }
     }
 
     fn op_insert(&mut self, index: usize) {
@@ -123,15 +206,16 @@ impl Set for VecIndexSet<u128> {
     }
 }
 
-fn bench<S, F, R>(c: &mut Criterion, op_name: &str, mut op: F)
+fn bench<S, F, R>(c: &mut Criterion, setup_for: SetupFor, mut op: F)
 where
     S: Set,
     F: FnMut(&mut S, usize) -> R,
 {
-    let bench_id = format!("{op_name} - {}", type_name::<S>());
+    let bench_id = format!("{} - {}", setup_for.name(), type_name::<S>());
     c.bench_function(&bench_id, |b| {
-        let mut set = S::new();
         b.iter(|| {
+            let mut set = S::setup(setup_for);
+
             for i in 0..1000 {
                 black_box(op(&mut set, i));
             }
@@ -140,15 +224,15 @@ where
 }
 
 fn bench_set_insert<S: Set>(c: &mut Criterion) {
-    bench::<S, _, _>(c, "insert", Set::op_insert);
+    bench::<S, _, _>(c, SetupFor::Insert, Set::op_insert);
 }
 
 fn bench_set_remove<S: Set>(c: &mut Criterion) {
-    bench::<S, _, _>(c, "remove", Set::op_remove);
+    bench::<S, _, _>(c, SetupFor::Remove, Set::op_remove);
 }
 
 fn bench_set_contains<S: Set>(c: &mut Criterion) {
-    bench::<S, _, _>(c, "contains", Set::op_contains);
+    bench::<S, _, _>(c, SetupFor::Contains, Set::op_contains);
 }
 
 criterion_group!(
