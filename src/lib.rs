@@ -39,7 +39,7 @@ pub trait IndexSet {
     fn union(&mut self, other: &Self);
 
     /// Attempt to reserve space for the specified
-    /// numer of additional [`usize`] elements.
+    /// number of additional [`usize`] elements.
     fn reserve(&mut self, _size: usize) {
         // NOOP
     }
