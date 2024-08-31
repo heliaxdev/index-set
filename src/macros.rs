@@ -120,15 +120,17 @@ macro_rules! index_set_impl_from {
 }
 
 macro_rules! index_set_tests_for {
-    ($Set:ty) => {
+    ($type:ident, $($Set:tt)*) => {
         #[cfg(test)]
-        mod tests {
+        mod $type {
             use crate::IndexSet;
+
+            type Set = $($Set)* :: <$type>;
 
             /// Test index insert ops.
             #[test]
             fn test_index_set_insert() {
-                let mut set = <$Set>::new();
+                let mut set = Set::new();
                 let mut indices = vec![1, 4, 6, 3, 1, 100, 123, 12, 3];
 
                 // insert some elements into the set
@@ -154,7 +156,7 @@ macro_rules! index_set_tests_for {
             /// Test index remove ops.
             #[test]
             fn test_index_set_remove() {
-                let mut set = <$Set>::new();
+                let mut set = Set::new();
                 let indices = [1, 4, 6, 3, 1, 100, 123, 12, 3];
                 let remove = [100, 6, 100, 12, 123, 3];
 
@@ -183,7 +185,7 @@ macro_rules! index_set_tests_for {
             fn test_index_set_from_iter() {
                 let indices = [1, 4, 6, 3, 1, 100, 123, 12, 3];
 
-                let got: $Set = indices.iter().copied().collect();
+                let got: Set = indices.iter().copied().collect();
                 let expected: ::std::collections::BTreeSet<_> = indices.iter().copied().collect();
 
                 assert_eq!(expected, got.into());
@@ -195,7 +197,7 @@ macro_rules! index_set_tests_for {
                 let indices_1 = [1, 4, 6, 3];
                 let indices_2 = [2, 100, 123, 12, 5];
 
-                let mut set = <$Set>::new();
+                let mut set = Set::new();
 
                 assert!(set.is_empty());
 
@@ -219,11 +221,42 @@ macro_rules! index_set_tests_for {
                 assert!(set.is_empty());
                 assert_eq!(set.len(), 0);
             }
+
+            /// Test the contains method of index sets.
+            #[test]
+            fn test_index_set_contains() {
+                let indices = [1, 4, 6, 3, 2, 100, 123, 12, 5];
+                let not_in_set = [50, 200, 150];
+
+                let set: Set = indices
+                    .iter()
+                    .copied()
+                    .collect();
+
+                for index in indices {
+                    assert!(set.contains(index));
+                }
+
+                for index in not_in_set {
+                    assert!(!set.contains(index));
+                }
+            }
         }
+    };
+}
+
+macro_rules! index_set_tests {
+    ($($Set:tt)*) => {
+        index_set_tests_for!(u8, $($Set)*);
+        index_set_tests_for!(u16, $($Set)*);
+        index_set_tests_for!(u32, $($Set)*);
+        index_set_tests_for!(u64, $($Set)*);
+        index_set_tests_for!(u128, $($Set)*);
     };
 }
 
 pub(crate) use index_set_impl_extend;
 pub(crate) use index_set_impl_from;
 pub(crate) use index_set_impl_from_iterator;
+pub(crate) use index_set_tests;
 pub(crate) use index_set_tests_for;

@@ -10,9 +10,7 @@ use borsh::{BorshDeserialize, BorshSchema, BorshSerialize};
 use serde::{Deserialize, Serialize};
 
 use super::calculate_map_and_set_indices;
-use super::macros::{
-    index_set_impl_extend, index_set_impl_from, index_set_impl_from_iterator, index_set_tests_for,
-};
+use super::macros::*;
 use super::storage;
 use super::IndexSet;
 
@@ -120,4 +118,4 @@ impl<S: storage::Storage> IndexSet for BTreeIndexSet<S> {
 index_set_impl_from!(crate::btree::BTreeIndexSet);
 index_set_impl_from_iterator!(crate::btree::BTreeIndexSet);
 index_set_impl_extend!(crate::btree::BTreeIndexSet);
-index_set_tests_for!(crate::btree::BTreeIndexSet::<u64>);
+index_set_tests!(crate::btree::BTreeIndexSet);
