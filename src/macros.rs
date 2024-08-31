@@ -241,6 +241,38 @@ macro_rules! index_set_tests_for {
                     assert!(!set.contains(index));
                 }
             }
+
+            /// Test the union method of index sets.
+            #[test]
+            fn test_index_set_union() {
+                let indices_1 = [1, 4, 6, 3, 2];
+                let indices_2 = [100, 123, 12, 5];
+
+                let expected = {
+                    let mut set = Set::new();
+
+                    for index in indices_1.iter().copied() {
+                        set.insert(index);
+                    }
+                    for index in indices_2.iter().copied() {
+                        set.insert(index);
+                    }
+
+                    set
+                };
+
+                let mut set: Set = indices_1
+                    .iter()
+                    .copied()
+                    .collect();
+                let other: Set = indices_2
+                    .iter()
+                    .copied()
+                    .collect();
+
+                set.union(&other);
+                assert_eq!(set, expected);
+            }
         }
     };
 }
